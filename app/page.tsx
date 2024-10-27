@@ -1,11 +1,12 @@
 "use client";
 
+import { Suspense } from 'react';
 import Image from "next/image";
 import TaskList from "./components/TaskList";
 import TaskForm from "./components/TaskForm";
 import { useSearchParams } from 'next/navigation';
 
-export default function Home() {
+function TaskBoard() {
   const searchParams = useSearchParams();
   const groupId = searchParams.get('startapp');
 
@@ -36,5 +37,13 @@ export default function Home() {
         Powered by Next.js
       </footer>
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={<div className="p-8">Loading...</div>}>
+      <TaskBoard />
+    </Suspense>
   );
 }
