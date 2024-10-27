@@ -10,19 +10,26 @@ interface TaskFormProps {
 
 export default function TaskForm({ groupId }: TaskFormProps) {
   const [title, setTitle] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim()) return;
+    if (!title.trim() || !db) return;
 
-    await addDoc(collection(db, 'tasks'), {
-      title,
-      completed: false,
-      createdAt: new Date(),
-      groupId, // Ajouter le groupId
-    });
+    try {
+      await addDoc(collection(db, 'tasks'), {
+        title: title.trim(),
+        completed: false,
+        createdAt: new Date(),
+        groupId,
+      });
 
-    setTitle('');
+      setTitle('');
+      setError(null);
+    } catch (err) {
+      console.error('Error adding task:', err);
+      setError('Failed to add task');
+    }
   };
 
   return (

@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import { getFirestore, Firestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -16,14 +16,11 @@ const firebaseConfig = {
 
 // Initialize Firebase only on client side
 let app;
-let db;
+let db: Firestore;
 
 if (typeof window !== 'undefined') {
   app = initializeApp(firebaseConfig);
   db = getFirestore(app);
-  
-  // Analytics can be initialized here if needed
-  // const analytics = getAnalytics(app);
 }
 
 export { db };
