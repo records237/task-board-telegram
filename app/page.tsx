@@ -5,6 +5,12 @@ import Image from "next/image";
 import TaskList from "./components/TaskList";
 import TaskForm from "./components/TaskForm";
 import { useLaunchParams } from "@telegram-apps/sdk-react";
+import dynamic from 'next/dynamic';
+
+// Créer un composant client-only pour le TaskBoard
+const TaskBoardClient = dynamic(() => Promise.resolve(TaskBoard), {
+  ssr: false
+});
 
 function TaskBoard() {
   const [groupId, setGroupId] = useState<string | null>(null);
@@ -81,7 +87,7 @@ function TaskBoard() {
 export default function Home() {
   return (
     <Suspense fallback={<div className="p-8">Loading...</div>}>
-      <TaskBoard />
+      <TaskBoardClient />
     </Suspense>
   );
 }
