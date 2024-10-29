@@ -1,17 +1,55 @@
 "use client";
 
-import { Suspense } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import Image from "next/image";
 import TaskList from "./components/TaskList";
 import TaskForm from "./components/TaskForm";
-import { useSearchParams } from 'next/navigation';
+import { useLaunchParams } from "@telegram-apps/sdk-react";
 
 function TaskBoard() {
-  const searchParams = useSearchParams();
-  const groupId = searchParams.get('startapp');
+  const [groupId, setGroupId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const launchParams = useLaunchParams();
+
+  useEffect(() => {
+    const initializeComponent = async () => {
+      try {
+        if (launchParams?.startParam) {
+          const encodedGroupId = launchParams.startParam;
+          try {
+            const decodedGroupId = atob(encodedGroupId);
+            console.log("Decoded Group ID:", decodedGroupId);
+            setGroupId(decodedGroupId);
+          } catch (error) {
+            console.error("Error decoding group ID:", error);
+            setError("Invalid group ID format");
+          }
+        } else {
+          console.log("No start_param available");
+          setError("No group ID provided");
+        }
+      } catch (error) {
+        console.error("Error in initializeComponent:", error);
+        setError("An error occurred while initializing the component");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initializeComponent();
+  }, [launchParams]);
+
+  if (isLoading) {
+    return <div className="p-8">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="p-8 text-red-500">{error}</div>;
+  }
 
   if (!groupId) {
-    return <div className="p-8">Please provide a group ID</div>;
+    return <div className="p-8">Please provide a valid group ID</div>;
   }
 
   return (
